@@ -4,6 +4,18 @@ let currentTab = 'dashboard';
 let currentModule = '';
 let editingId = null;
 
+// Helper function to convert plural to singular
+function toSingular(plural) {
+    const conversions = {
+        'fornecedores': 'fornecedor',
+        'prestadores': 'prestador',
+        'contratos': 'contrato',
+        'memorandos': 'memorando',
+        'parcerias': 'parceria'
+    };
+    return conversions[plural] || plural;
+}
+
 // Initialize App
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
@@ -60,7 +72,7 @@ function setupEventListeners() {
     // Dynamic add button
     document.getElementById('add-button').addEventListener('click', () => {
         if (currentTab !== 'dashboard') {
-            openModal(currentTab.replace('s', ''));
+            openModal(toSingular(currentTab));
         }
     });
 }
@@ -309,8 +321,17 @@ function editarItem(modulo, id, campo = 'codigo') {
     const modalTitle = document.getElementById('modal-title');
     const modalBody = document.getElementById('modal-body');
 
-    modalTitle.textContent = `Editar ${modulo.slice(0, -1)}`;
-    modalBody.innerHTML = renderForm(modulo.slice(0, -1), item);
+    const tipo = toSingular(modulo);
+    const titles = {
+        'fornecedor': 'Editar Fornecedor',
+        'prestador': 'Editar Prestador',
+        'contrato': 'Editar Contrato',
+        'memorando': 'Editar Memorando',
+        'parceria': 'Editar Parceria'
+    };
+
+    modalTitle.textContent = titles[tipo] || 'Editar';
+    modalBody.innerHTML = renderForm(tipo, item);
 
     modal.classList.add('active');
 }
