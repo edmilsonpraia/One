@@ -1,0 +1,305 @@
+/* ===== Estilos Adicionais para Sistema Completo ===== */
+
+/* Stats Grid Extended */
+.stats-grid-extended {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    cursor: pointer;
+}
+
+.stat-icon.teal { background: linear-gradient(135deg, #14b8a6, #0d9488); }
+.stat-icon.brown { background: linear-gradient(135deg, #A0682A, #704D1F); }
+
+/* Module Header */
+.module-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.module-header h2 {
+    color: var(--dark-color);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.module-header h2 i {
+    color: var(--primary-color);
+}
+
+/* Actions Column */
+.actions-col {
+    width: 120px;
+    text-align: center !important;
+}
+
+/* Enhanced Table Styles */
+table {
+    font-size: 0.9rem;
+}
+
+table th {
+    background: linear-gradient(135deg, #F8F4EF, #FFF8F0);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Modal Body Container */
+#modal-body {
+    padding: 1.5rem;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* Forms in Modal */
+.modal-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.modal-form .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-form .form-group.full {
+    grid-column: 1 / -1;
+}
+
+.modal-form label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--dark-color);
+    font-size: 0.9rem;
+}
+
+.modal-form input,
+.modal-form select,
+.modal-form textarea {
+    padding: 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: border-color 0.3s;
+    font-family: inherit;
+}
+
+.modal-form input:focus,
+.modal-form select:focus,
+.modal-form textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.modal-form textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Modal Footer */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    background: var(--light-color);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--secondary-color);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+}
+
+/* Info Badge */
+.info-badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: var(--info-color);
+    color: white;
+}
+
+/* Date Badge */
+.date-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--secondary-color);
+}
+
+.date-badge i {
+    color: var(--primary-color);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .stats-grid-extended {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid-extended {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .module-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .module-header button {
+        width: 100%;
+    }
+
+    .modal-form {
+        grid-template-columns: 1fr;
+    }
+
+    .table-container {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid-extended {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Loading Spinner */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Tooltip */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: var(--dark-color);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.85rem;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Success Message */
+.success-message {
+    background: var(--success-color);
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.success-message i {
+    font-size: 1.5rem;
+}
+
+/* Error Message */
+.error-message {
+    background: var(--danger-color);
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.error-message i {
+    font-size: 1.5rem;
+}
+
+/* Importância Badges */
+.importancia-badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.importancia-badge.baixa {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.importancia-badge.média {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.importancia-badge.alta {
+    background: #fed7aa;
+    color: #9a3412;
+}
+
+.importancia-badge.crítica {
+    background: #fee2e2;
+    color: #991b1b;
+}
