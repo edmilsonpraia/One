@@ -24,7 +24,7 @@ function generatePDF(contrato) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    // Company colors (ALNEZ MS LO)
+    // Company colors (Copia Group of Companies, SA)
     const primaryColor = [160, 104, 42]; // #A0682A
     const accentColor = [224, 123, 57]; // #E07B39
     const textColor = [61, 40, 23]; // #3D2817
@@ -61,7 +61,7 @@ function addHeader(doc, primaryColor, textColor) {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(24);
     doc.setFont(undefined, 'bold');
-    doc.text('ALNEZ MS LO', 15, 20);
+    doc.text('Copia Group of Companies, SA', 15, 20);
 
     doc.setFontSize(10);
     doc.setFont(undefined, 'normal');
@@ -257,7 +257,7 @@ function addFooter(doc, primaryColor) {
     doc.setFontSize(8);
     doc.setFont(undefined, 'normal');
 
-    const footerText = 'Este documento foi gerado automaticamente pelo Sistema de Gestão Comercial ALNEZ MS LO';
+    const footerText = 'Este documento foi gerado automaticamente pelo Sistema de Gestão Comercial Copia Group of Companies, SA';
     doc.text(footerText, 105, pageHeight - 18, { align: 'center' });
 
     const dateText = `Gerado em: ${new Date().toLocaleString('pt-AO')}`;

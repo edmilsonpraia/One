@@ -1,10 +1,11 @@
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestão de Fornecedores</title>
+    <title>Sistema de Gestão Comercial - Copia Group of Companies, SA</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style-adicional.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -12,15 +13,15 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <img src="Picture1.png" alt="ALNEZ MS LO Logo" class="logo-image">
-                <h1>Gestão de Fornecedores</h1>
+                <img src="Picture1.png" alt="Copia Group of Companies Logo" class="logo-image">
+                <h1>Sistema de Gestão Comercial</h1>
             </div>
             <div class="nav-actions">
-                <button class="btn btn-primary" onclick="openAddModal()">
-                    <i class="fas fa-plus"></i> Novo Fornecedor
+                <button class="btn btn-primary" id="add-button">
+                    <i class="fas fa-plus"></i> Novo
                 </button>
-                <button class="btn btn-success" onclick="exportToExcel()">
-                    <i class="fas fa-file-excel"></i> Exportar Excel
+                <button class="btn btn-success" onclick="exportAllToExcel()">
+                    <i class="fas fa-file-excel"></i> Exportar
                 </button>
             </div>
         </div>
@@ -31,51 +32,81 @@
         <!-- Tabs -->
         <div class="tabs">
             <button class="tab-btn active" onclick="showTab('dashboard')">
-                <i class="fas fa-chart-line"></i> Dashboard
+                <i class="fas fa-th-large"></i> Dashboard
             </button>
             <button class="tab-btn" onclick="showTab('fornecedores')">
-                <i class="fas fa-list"></i> Fornecedores
+                <i class="fas fa-building"></i> Fornecedores
+            </button>
+            <button class="tab-btn" onclick="showTab('prestadores')">
+                <i class="fas fa-user-tie"></i> Prestadores
+            </button>
+            <button class="tab-btn" onclick="showTab('contratos')">
+                <i class="fas fa-file-contract"></i> Contratos
+            </button>
+            <button class="tab-btn" onclick="showTab('memorandos')">
+                <i class="fas fa-file-alt"></i> Memorandos
+            </button>
+            <button class="tab-btn" onclick="showTab('parcerias')">
+                <i class="fas fa-handshake"></i> Parcerias
             </button>
         </div>
 
         <!-- Dashboard Tab -->
         <div id="dashboard-tab" class="tab-content active">
-            <!-- Stats Cards -->
-            <div class="stats-grid">
-                <div class="stat-card">
+            <!-- Stats Grid -->
+            <div class="stats-grid-extended">
+                <div class="stat-card" onclick="showTab('fornecedores')">
                     <div class="stat-icon blue">
                         <i class="fas fa-building"></i>
                     </div>
                     <div class="stat-info">
                         <h3 id="total-fornecedores">0</h3>
-                        <p>Total de Fornecedores</p>
+                        <p>Fornecedores</p>
                     </div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" onclick="showTab('prestadores')">
                     <div class="stat-icon green">
-                        <i class="fas fa-check-circle"></i>
+                        <i class="fas fa-user-tie"></i>
                     </div>
                     <div class="stat-info">
-                        <h3 id="total-correntes">0</h3>
-                        <p>Correntes</p>
+                        <h3 id="total-prestadores">0</h3>
+                        <p>Prestadores</p>
                     </div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" onclick="showTab('contratos')">
                     <div class="stat-icon orange">
-                        <i class="fas fa-times-circle"></i>
+                        <i class="fas fa-file-contract"></i>
                     </div>
                     <div class="stat-info">
-                        <h3 id="total-nao-correntes">0</h3>
-                        <p>Não Correntes</p>
+                        <h3 id="total-contratos">0</h3>
+                        <p>Contratos</p>
+                    </div>
+                </div>
+                <div class="stat-card" onclick="showTab('memorandos')">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="total-memorandos">0</h3>
+                        <p>Memorandos</p>
+                    </div>
+                </div>
+                <div class="stat-card" onclick="showTab('parcerias')">
+                    <div class="stat-icon brown">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="total-parcerias">0</h3>
+                        <p>Parcerias</p>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon purple">
-                        <i class="fas fa-briefcase"></i>
+                    <div class="stat-icon teal">
+                        <i class="fas fa-chart-line"></i>
                     </div>
                     <div class="stat-info">
-                        <h3 id="total-areas">0</h3>
-                        <p>Áreas Atendidas</p>
+                        <h3 id="total-geral">0</h3>
+                        <p>Total Geral</p>
                     </div>
                 </div>
             </div>
@@ -83,178 +114,213 @@
             <!-- Charts -->
             <div class="charts-grid">
                 <div class="chart-card">
-                    <h3>Fornecedores por Área</h3>
+                    <h3><i class="fas fa-chart-pie"></i> Distribuição por Categoria</h3>
+                    <canvas id="categoryChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3><i class="fas fa-chart-bar"></i> Fornecedores por Área</h3>
                     <canvas id="areaChart"></canvas>
                 </div>
                 <div class="chart-card">
-                    <h3>Corrente vs Não Corrente</h3>
-                    <canvas id="correnteChart"></canvas>
-                </div>
-                <div class="chart-card">
-                    <h3>Frequência de Pagamento</h3>
-                    <canvas id="frequenciaChart"></canvas>
+                    <h3><i class="fas fa-chart-line"></i> Status Geral</h3>
+                    <canvas id="statusChart"></canvas>
                 </div>
             </div>
         </div>
 
         <!-- Fornecedores Tab -->
         <div id="fornecedores-tab" class="tab-content">
-            <!-- Filters -->
+            <div class="module-header">
+                <h2><i class="fas fa-building"></i> Gestão de Fornecedores</h2>
+                <button class="btn btn-primary" onclick="openModal('fornecedor')">
+                    <i class="fas fa-plus"></i> Novo Fornecedor
+                </button>
+            </div>
             <div class="filters-section">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="search-input" placeholder="Pesquisar fornecedor, código, produto...">
+                    <input type="text" id="search-fornecedores" placeholder="Pesquisar fornecedor...">
                 </div>
                 <div class="filter-group">
-                    <select id="filter-corrente" onchange="applyFilters()">
+                    <select id="filter-fornecedor-status">
                         <option value="">Todos os Status</option>
                         <option value="corrente">Corrente</option>
                         <option value="não corrente">Não Corrente</option>
                     </select>
-                    <select id="filter-area" onchange="applyFilters()">
+                    <select id="filter-fornecedor-area">
                         <option value="">Todas as Áreas</option>
                     </select>
-                    <select id="filter-frequencia" onchange="applyFilters()">
-                        <option value="">Todas as Frequências</option>
-                        <option value="mensal">Mensal</option>
-                        <option value="trimestral">Trimestral</option>
-                        <option value="semestral">Semestral</option>
-                        <option value="anual">Anual</option>
-                    </select>
-                    <button class="btn btn-secondary" onclick="clearFilters()">
-                        <i class="fas fa-times"></i> Limpar Filtros
-                    </button>
                 </div>
             </div>
-
-            <!-- Table -->
             <div class="table-container">
                 <table id="fornecedores-table">
                     <thead>
                         <tr>
-                            <th onclick="sortTable('codigo')">Código <i class="fas fa-sort"></i></th>
-                            <th onclick="sortTable('nome')">Nome do Fornecedor <i class="fas fa-sort"></i></th>
-                            <th onclick="sortTable('corrente')">Status <i class="fas fa-sort"></i></th>
-                            <th onclick="sortTable('area')">Área <i class="fas fa-sort"></i></th>
-                            <th onclick="sortTable('produto')">Produto/Serviço <i class="fas fa-sort"></i></th>
-                            <th onclick="sortTable('frequencia')">Frequência <i class="fas fa-sort"></i></th>
-                            <th onclick="sortTable('responsavel')">Responsável <i class="fas fa-sort"></i></th>
-                            <th>Ações</th>
+                            <th>Código</th>
+                            <th>Nome</th>
+                            <th>Status</th>
+                            <th>Área</th>
+                            <th>Produto/Serviço</th>
+                            <th>Responsável</th>
+                            <th class="actions-col">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="table-body">
-                        <!-- Populated by JavaScript -->
-                    </tbody>
+                    <tbody id="fornecedores-tbody"></tbody>
                 </table>
             </div>
+            <div class="pagination" id="pagination-fornecedores"></div>
+        </div>
 
-            <!-- Pagination -->
-            <div class="pagination" id="pagination">
-                <!-- Populated by JavaScript -->
+        <!-- Prestadores Tab -->
+        <div id="prestadores-tab" class="tab-content">
+            <div class="module-header">
+                <h2><i class="fas fa-user-tie"></i> Prestadores de Serviços</h2>
+                <button class="btn btn-primary" onclick="openModal('prestador')">
+                    <i class="fas fa-plus"></i> Novo Prestador
+                </button>
+            </div>
+            <div class="filters-section">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-prestadores" placeholder="Pesquisar prestador...">
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="prestadores-table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nome/Empresa</th>
+                            <th>Tipo de Serviço</th>
+                            <th>Área</th>
+                            <th>Periodicidade</th>
+                            <th>Status</th>
+                            <th class="actions-col">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="prestadores-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Contratos Tab -->
+        <div id="contratos-tab" class="tab-content">
+            <div class="module-header">
+                <h2><i class="fas fa-file-contract"></i> Contratos</h2>
+                <button class="btn btn-primary" onclick="openModal('contrato')">
+                    <i class="fas fa-plus"></i> Novo Contrato
+                </button>
+            </div>
+            <div class="filters-section">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-contratos" placeholder="Pesquisar contrato...">
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="contratos-table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Tipo</th>
+                            <th>Entidade</th>
+                            <th>Objeto</th>
+                            <th>Data Contrato</th>
+                            <th>Importância</th>
+                            <th>Avaliação</th>
+                            <th>Status</th>
+                            <th class="actions-col">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contratos-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Memorandos Tab -->
+        <div id="memorandos-tab" class="tab-content">
+            <div class="module-header">
+                <h2><i class="fas fa-file-alt"></i> Memorandos</h2>
+                <button class="btn btn-primary" onclick="openModal('memorando')">
+                    <i class="fas fa-plus"></i> Novo Memorando
+                </button>
+            </div>
+            <div class="filters-section">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-memorandos" placeholder="Pesquisar memorando...">
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="memorandos-table">
+                    <thead>
+                        <tr>
+                            <th>Nº</th>
+                            <th>Empresa</th>
+                            <th>Data</th>
+                            <th>Área Origem</th>
+                            <th>Destinatário</th>
+                            <th>Objeto</th>
+                            <th class="actions-col">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="memorandos-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Parcerias Tab -->
+        <div id="parcerias-tab" class="tab-content">
+            <div class="module-header">
+                <h2><i class="fas fa-handshake"></i> Parcerias e Associações</h2>
+                <button class="btn btn-primary" onclick="openModal('parceria')">
+                    <i class="fas fa-plus"></i> Nova Parceria
+                </button>
+            </div>
+            <div class="filters-section">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-parcerias" placeholder="Pesquisar parceria...">
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="parcerias-table">
+                    <thead>
+                        <tr>
+                            <th>Entidade</th>
+                            <th>Tipo</th>
+                            <th>Área Atuação</th>
+                            <th>Tipo Parceria</th>
+                            <th>Periodicidade</th>
+                            <th>Status</th>
+                            <th class="actions-col">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="parcerias-tbody"></tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <!-- Modal -->
-    <div id="fornecedor-modal" class="modal">
+    <!-- Universal Modal -->
+    <div id="universal-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modal-title">Novo Fornecedor</h2>
+                <h2 id="modal-title">Modal</h2>
                 <span class="close" onclick="closeModal()">&times;</span>
             </div>
-            <form id="fornecedor-form">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="codigo">Código do Fornecedor *</label>
-                        <input type="text" id="codigo" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="tipo">Tipo *</label>
-                        <select id="tipo" required>
-                            <option value="Original">Original</option>
-                            <option value="Novo">Novo</option>
-                        </select>
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="nome">Nome do Fornecedor *</label>
-                        <input type="text" id="nome" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="corrente">Corrente/Não Corrente *</label>
-                        <select id="corrente" required>
-                            <option value="corrente">Corrente</option>
-                            <option value="não corrente">Não Corrente</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="area">Área que Atende *</label>
-                        <input type="text" id="area" required>
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="produto">Produto ou Serviço *</label>
-                        <input type="text" id="produto" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="frequencia">Frequência *</label>
-                        <select id="frequencia" required>
-                            <option value="mensal">Mensal</option>
-                            <option value="trimestral">Trimestral</option>
-                            <option value="semestral">Semestral</option>
-                            <option value="anual">Anual</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="valor">Valor Estimado/Fixo</label>
-                        <input type="number" id="valor" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label for="moeda">Moeda *</label>
-                        <select id="moeda" required>
-                            <option value="AOA">AOA</option>
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="pagamento">Forma de Pagamento *</label>
-                        <input type="text" id="pagamento" value="Transferencia" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="responsavel">Responsável Interno *</label>
-                        <input type="text" id="responsavel" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="data_inicio">Data de Início</label>
-                        <input type="date" id="data_inicio">
-                    </div>
-                    <div class="form-group">
-                        <label for="status">Status</label>
-                        <select id="status">
-                            <option value="">Selecionar...</option>
-                            <option value="Ativo">Ativo</option>
-                            <option value="Inativo">Inativo</option>
-                            <option value="Pendente">Pendente</option>
-                        </select>
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="observacoes">Observações</label>
-                        <textarea id="observacoes" rows="3"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Salvar</button>
-                </div>
-            </form>
+            <div id="modal-body"></div>
         </div>
     </div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="js/data.js"></script>
-    <script src="js/charts.js"></script>
-    <script src="js/export.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/data-manager.js"></script>
+    <script src="js/forms.js"></script>
+    <script src="js/charts-novo.js"></script>
+    <script src="js/export-novo.js"></script>
+    <script src="js/fatura.js"></script>
+    <script src="js/app-novo.js"></script>
 </body>
 </html>

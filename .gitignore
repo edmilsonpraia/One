@@ -19,3 +19,7 @@ Thumbs.db
 
 # Node modules (if added later)
 node_modules/
+
+# Backup files
+*_backup.html
+*_antigo*.html
