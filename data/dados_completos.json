@@ -1043,7 +1043,7 @@
     {
       "numero": "MEM-001",
       "empresa": "Maply Tecnologia",
-      "data": "2025-10-19 00:00:00",
+      "data": "2025-10-19",
       "area_origem": "Comercial",
       "destinatario": "Direcção",
       "tipo": "Interno",
@@ -1057,7 +1057,7 @@
     {
       "numero": "MEM-002",
       "empresa": "Sebanna",
-      "data": "2025-09-15 00:00:00",
+      "data": "2025-09-15",
       "area_origem": "Comercial",
       "destinatario": "Direcção",
       "tipo": "Interno",
@@ -1085,7 +1085,7 @@
     {
       "numero": "MEM-004",
       "empresa": "Intertechne",
-      "data": "2025-06-30 00:00:00",
+      "data": "2025-06-30",
       "area_origem": "Comercial",
       "destinatario": "Direcção",
       "tipo": "Interno",
