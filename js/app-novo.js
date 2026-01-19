@@ -257,7 +257,12 @@ function renderTableRow(modulo, item) {
                 <td>${item.data || '-'}</td>
                 <td>${item.area_origem}</td>
                 <td>${item.destinatario}</td>
-                <td>${item.objeto}</td>
+                <td><span class="info-badge">${item.tipo || '-'}</span></td>
+                <td title="${item.objeto}">${item.objeto ? (item.objeto.length > 40 ? item.objeto.substring(0, 40) + '...' : item.objeto) : '-'}</td>
+                <td>${item.duracao || '-'}</td>
+                <td title="${item.descricao || ''}">${item.descricao ? (item.descricao.length > 30 ? item.descricao.substring(0, 30) + '...' : item.descricao) : '-'}</td>
+                <td>${item.documento || '-'}</td>
+                <td>${item.responsavel}</td>
                 <td class="action-buttons">
                     <button class="btn-icon edit" onclick="editarItem('memorandos', '${item.numero}', 'numero')">
                         <i class="fas fa-edit"></i>
