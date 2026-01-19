@@ -246,9 +246,14 @@
         <div id="memorandos-tab" class="tab-content">
             <div class="module-header">
                 <h2><i class="fas fa-file-alt"></i> Memorandos</h2>
-                <button class="btn btn-primary" onclick="openModal('memorando')">
-                    <i class="fas fa-plus"></i> Novo Memorando
-                </button>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-success" onclick="exportarMemorandos()">
+                        <i class="fas fa-file-excel"></i> Exportar Excel
+                    </button>
+                    <button class="btn btn-primary" onclick="openModal('memorando')">
+                        <i class="fas fa-plus"></i> Novo Memorando
+                    </button>
+                </div>
             </div>
             <div class="filters-section">
                 <div class="search-box">

@@ -34,16 +34,27 @@ function exportModuleSheet(workbook, modulo, sheetName) {
                 'Código': f.codigo,
                 'Tipo': f.tipo,
                 'Nome': f.nome,
+                'NIF': f.nif || '',
+                'Telefone': f.telefone || '',
+                'Email': f.email || '',
                 'Status': f.corrente,
-                'Área': f.area,
+                'Departamento/Área': f.area,
                 'Produto/Serviço': f.produto,
                 'Frequência': f.frequencia,
                 'Valor': f.valor || '',
                 'Moeda': f.moeda,
-                'Pagamento': f.pagamento,
-                'Responsável': f.responsavel,
+                'Condições Pagamento': f.condicoes_pagamento || '',
+                'Forma de Pagamento': f.pagamento,
+                'Banco': f.banco || '',
+                'NIB/IBAN': f.nib || '',
+                'Total Pago': f.total_pago || '0',
+                'Total em Dívida': f.total_divida || '0',
                 'Data Início': f.data_inicio || '',
-                'Status Geral': f.status || '',
+                'Data Última Fatura': f.data_ultima_fatura || '',
+                'Próximo Pagamento': f.proximo_pagamento || '',
+                'Responsável': f.responsavel,
+                'Status': f.status || '',
+                'Avaliação': f.avaliacao || '',
                 'Observações': f.observacoes || ''
             }));
             break;
@@ -152,4 +163,25 @@ function exportModuleToExcel(modulo) {
     XLSX.writeFile(wb, filename);
 
     mostrarNotificacao(`${sheetNames[modulo]} exportados com sucesso!`, 'success');
+}
+
+// Specific export functions for each module
+function exportarMemorandos() {
+    exportModuleToExcel('memorandos');
+}
+
+function exportarFornecedores() {
+    exportModuleToExcel('fornecedores');
+}
+
+function exportarPrestadores() {
+    exportModuleToExcel('prestadores');
+}
+
+function exportarContratos() {
+    exportModuleToExcel('contratos');
+}
+
+function exportarParcerias() {
+    exportModuleToExcel('parcerias');
 }

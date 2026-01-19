@@ -52,7 +52,26 @@ function renderFornecedorForm(data) {
             </div>
             <div class="form-group">
                 <label>Área/Departamento *</label>
-                <input type="text" name="area" value="${data?.area || ''}" required>
+                <select name="area" id="area-select" onchange="toggleAreaOutro(this)" required>
+                    <option value="">Selecionar Departamento...</option>
+                    <option value="Administrativo" ${data?.area === 'Administrativo' ? 'selected' : ''}>Administrativo</option>
+                    <option value="Financeiro" ${data?.area === 'Financeiro' ? 'selected' : ''}>Financeiro</option>
+                    <option value="Recursos Humanos" ${data?.area === 'Recursos Humanos' ? 'selected' : ''}>Recursos Humanos</option>
+                    <option value="TI/Tecnologia" ${data?.area === 'TI/Tecnologia' ? 'selected' : ''}>TI/Tecnologia</option>
+                    <option value="Comercial" ${data?.area === 'Comercial' ? 'selected' : ''}>Comercial</option>
+                    <option value="Marketing" ${data?.area === 'Marketing' ? 'selected' : ''}>Marketing</option>
+                    <option value="Operações" ${data?.area === 'Operações' ? 'selected' : ''}>Operações</option>
+                    <option value="Logística" ${data?.area === 'Logística' ? 'selected' : ''}>Logística</option>
+                    <option value="Manutenção" ${data?.area === 'Manutenção' ? 'selected' : ''}>Manutenção</option>
+                    <option value="Jurídico" ${data?.area === 'Jurídico' ? 'selected' : ''}>Jurídico</option>
+                    <option value="Segurança" ${data?.area === 'Segurança' ? 'selected' : ''}>Segurança</option>
+                    <option value="Limpeza" ${data?.area === 'Limpeza' ? 'selected' : ''}>Limpeza</option>
+                    <option value="Outro" ${data?.area && !['Administrativo', 'Financeiro', 'Recursos Humanos', 'TI/Tecnologia', 'Comercial', 'Marketing', 'Operações', 'Logística', 'Manutenção', 'Jurídico', 'Segurança', 'Limpeza'].includes(data?.area) ? 'selected' : ''}>Outro (Especificar)</option>
+                </select>
+            </div>
+            <div class="form-group" id="area-outro-group" style="display: ${data?.area && !['Administrativo', 'Financeiro', 'Recursos Humanos', 'TI/Tecnologia', 'Comercial', 'Marketing', 'Operações', 'Logística', 'Manutenção', 'Jurídico', 'Segurança', 'Limpeza'].includes(data?.area) ? 'block' : 'none'};">
+                <label>Especificar Departamento *</label>
+                <input type="text" name="area_outro" id="area-outro-input" value="${data?.area && !['Administrativo', 'Financeiro', 'Recursos Humanos', 'TI/Tecnologia', 'Comercial', 'Marketing', 'Operações', 'Logística', 'Manutenção', 'Jurídico', 'Segurança', 'Limpeza'].includes(data?.area) ? data?.area : ''}" placeholder="Digite o nome do departamento">
             </div>
             <div class="form-group full">
                 <label>Produto ou Serviço *</label>
@@ -472,11 +491,35 @@ function renderParceriaForm(data) {
     `;
 }
 
+// Helper function for area selection
+function toggleAreaOutro(selectElement) {
+    const outroGroup = document.getElementById('area-outro-group');
+    const outroInput = document.getElementById('area-outro-input');
+
+    if (selectElement.value === 'Outro') {
+        outroGroup.style.display = 'block';
+        outroInput.required = true;
+    } else {
+        outroGroup.style.display = 'none';
+        outroInput.required = false;
+        outroInput.value = '';
+    }
+}
+
 // Form Submit Handlers
 function salvarFornecedor(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
+
+    // Handle area_outro field
+    if (data.area === 'Outro' && data.area_outro) {
+        data.area = data.area_outro;
+        delete data.area_outro;
+    }
+
+    const isNewFornecedor = !editingId;
+    const codigoFornecedor = data.codigo;
 
     if (editingId) {
         atualizarItem('fornecedores', editingId, data);
@@ -493,6 +536,15 @@ function salvarFornecedor(event) {
     closeModal();
     renderTable('fornecedores');
     atualizarDashboard();
+
+    // Generate invoice automatically for new fornecedor
+    if (isNewFornecedor) {
+        setTimeout(() => {
+            if (confirm('Fornecedor adicionado com sucesso! Deseja gerar a fatura agora?')) {
+                gerarFaturaFornecedor(codigoFornecedor);
+            }
+        }, 500);
+    }
 }
 
 function salvarPrestador(event) {
