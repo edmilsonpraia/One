@@ -15,6 +15,7 @@ function renderForm(tipo, data = null) {
 function renderFornecedorForm(data) {
     return `
         <form class="modal-form" onsubmit="salvarFornecedor(event)">
+            <h3 style="margin: 0 0 1rem 0; color: #A0682A; border-bottom: 2px solid #E07B39; padding-bottom: 0.5rem;">Informações Básicas</h3>
             <div class="form-group">
                 <label>Código *</label>
                 <input type="text" name="codigo" value="${data?.codigo || ''}" ${data ? 'readonly' : ''} required>
@@ -31,6 +32,18 @@ function renderFornecedorForm(data) {
                 <input type="text" name="nome" value="${data?.nome || ''}" required>
             </div>
             <div class="form-group">
+                <label>NIF (Número de Identificação Fiscal)</label>
+                <input type="text" name="nif" value="${data?.nif || ''}" placeholder="000000000">
+            </div>
+            <div class="form-group">
+                <label>Telefone</label>
+                <input type="tel" name="telefone" value="${data?.telefone || ''}" placeholder="+244 900 000 000">
+            </div>
+            <div class="form-group full">
+                <label>Email</label>
+                <input type="email" name="email" value="${data?.email || ''}" placeholder="fornecedor@exemplo.com">
+            </div>
+            <div class="form-group">
                 <label>Corrente/Não Corrente *</label>
                 <select name="corrente" required>
                     <option value="corrente" ${data?.corrente === 'corrente' ? 'selected' : ''}>Corrente</option>
@@ -38,12 +51,26 @@ function renderFornecedorForm(data) {
                 </select>
             </div>
             <div class="form-group">
-                <label>Área que Atende *</label>
+                <label>Área/Departamento *</label>
                 <input type="text" name="area" value="${data?.area || ''}" required>
             </div>
             <div class="form-group full">
                 <label>Produto ou Serviço *</label>
                 <input type="text" name="produto" value="${data?.produto || ''}" required>
+            </div>
+
+            <h3 style="margin: 1.5rem 0 1rem 0; color: #A0682A; border-bottom: 2px solid #E07B39; padding-bottom: 0.5rem;">Informações Financeiras</h3>
+            <div class="form-group">
+                <label>Valor Estimado/Fixo</label>
+                <input type="number" name="valor" value="${data?.valor || ''}" step="0.01" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label>Moeda *</label>
+                <select name="moeda" required>
+                    <option value="AOA" ${!data || data?.moeda === 'AOA' ? 'selected' : ''}>AOA - Kwanza</option>
+                    <option value="USD" ${data?.moeda === 'USD' ? 'selected' : ''}>USD - Dólar</option>
+                    <option value="EUR" ${data?.moeda === 'EUR' ? 'selected' : ''}>EUR - Euro</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>Frequência *</label>
@@ -52,24 +79,45 @@ function renderFornecedorForm(data) {
                     <option value="trimestral" ${data?.frequencia === 'trimestral' ? 'selected' : ''}>Trimestral</option>
                     <option value="semestral" ${data?.frequencia === 'semestral' ? 'selected' : ''}>Semestral</option>
                     <option value="anual" ${data?.frequencia === 'anual' ? 'selected' : ''}>Anual</option>
+                    <option value="pontual" ${data?.frequencia === 'pontual' ? 'selected' : ''}>Pontual</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Valor Estimado/Fixo</label>
-                <input type="number" name="valor" value="${data?.valor || ''}" step="0.01">
-            </div>
-            <div class="form-group">
-                <label>Moeda *</label>
-                <select name="moeda" required>
-                    <option value="AOA" ${!data || data?.moeda === 'AOA' ? 'selected' : ''}>AOA</option>
-                    <option value="USD" ${data?.moeda === 'USD' ? 'selected' : ''}>USD</option>
-                    <option value="EUR" ${data?.moeda === 'EUR' ? 'selected' : ''}>EUR</option>
+                <label>Condições de Pagamento *</label>
+                <select name="condicoes_pagamento" required>
+                    <option value="pronto" ${data?.condicoes_pagamento === 'pronto' ? 'selected' : ''}>Pronto Pagamento</option>
+                    <option value="30dias" ${!data || data?.condicoes_pagamento === '30dias' ? 'selected' : ''}>30 Dias</option>
+                    <option value="60dias" ${data?.condicoes_pagamento === '60dias' ? 'selected' : ''}>60 Dias</option>
+                    <option value="90dias" ${data?.condicoes_pagamento === '90dias' ? 'selected' : ''}>90 Dias</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Forma de Pagamento *</label>
-                <input type="text" name="pagamento" value="${data?.pagamento || 'Transferencia'}" required>
+                <select name="pagamento" required>
+                    <option value="Transferência" ${!data || data?.pagamento === 'Transferência' || data?.pagamento === 'Transferencia' ? 'selected' : ''}>Transferência Bancária</option>
+                    <option value="Cheque" ${data?.pagamento === 'Cheque' ? 'selected' : ''}>Cheque</option>
+                    <option value="Numerário" ${data?.pagamento === 'Numerário' ? 'selected' : ''}>Numerário</option>
+                    <option value="Multicaixa" ${data?.pagamento === 'Multicaixa' ? 'selected' : ''}>Multicaixa</option>
+                </select>
             </div>
+            <div class="form-group full">
+                <label>Banco</label>
+                <input type="text" name="banco" value="${data?.banco || ''}" placeholder="Ex: BAI, BFA, BIC, etc.">
+            </div>
+            <div class="form-group full">
+                <label>NIB/IBAN</label>
+                <input type="text" name="nib" value="${data?.nib || ''}" placeholder="AO06 0000 0000 0000 0000 0000 0">
+            </div>
+            <div class="form-group">
+                <label>Total Pago (Acumulado)</label>
+                <input type="number" name="total_pago" value="${data?.total_pago || '0'}" step="0.01" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label>Total em Dívida</label>
+                <input type="number" name="total_divida" value="${data?.total_divida || '0'}" step="0.01" placeholder="0.00">
+            </div>
+
+            <h3 style="margin: 1.5rem 0 1rem 0; color: #A0682A; border-bottom: 2px solid #E07B39; padding-bottom: 0.5rem;">Gestão e Controle</h3>
             <div class="form-group">
                 <label>Responsável Interno *</label>
                 <input type="text" name="responsavel" value="${data?.responsavel || ''}" required>
@@ -79,12 +127,36 @@ function renderFornecedorForm(data) {
                 <input type="date" name="data_inicio" value="${data?.data_inicio || ''}">
             </div>
             <div class="form-group">
-                <label>Status</label>
-                <input type="text" name="status" value="${data?.status || ''}">
+                <label>Data Última Fatura</label>
+                <input type="date" name="data_ultima_fatura" value="${data?.data_ultima_fatura || ''}">
+            </div>
+            <div class="form-group">
+                <label>Próximo Pagamento</label>
+                <input type="date" name="proximo_pagamento" value="${data?.proximo_pagamento || ''}">
+            </div>
+            <div class="form-group">
+                <label>Status *</label>
+                <select name="status" required>
+                    <option value="Ativo" ${!data || data?.status === 'Ativo' ? 'selected' : ''}>Ativo</option>
+                    <option value="Inativo" ${data?.status === 'Inativo' ? 'selected' : ''}>Inativo</option>
+                    <option value="Pendente" ${data?.status === 'Pendente' ? 'selected' : ''}>Pendente</option>
+                    <option value="Suspenso" ${data?.status === 'Suspenso' ? 'selected' : ''}>Suspenso</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Avaliação (1-5)</label>
+                <select name="avaliacao">
+                    <option value="">Sem avaliação</option>
+                    <option value="1" ${data?.avaliacao === '1' ? 'selected' : ''}>⭐ 1 - Muito Fraco</option>
+                    <option value="2" ${data?.avaliacao === '2' ? 'selected' : ''}>⭐⭐ 2 - Fraco</option>
+                    <option value="3" ${data?.avaliacao === '3' ? 'selected' : ''}>⭐⭐⭐ 3 - Bom</option>
+                    <option value="4" ${data?.avaliacao === '4' ? 'selected' : ''}>⭐⭐⭐⭐ 4 - Muito Bom</option>
+                    <option value="5" ${data?.avaliacao === '5' ? 'selected' : ''}>⭐⭐⭐⭐⭐ 5 - Excelente</option>
+                </select>
             </div>
             <div class="form-group full">
                 <label>Observações</label>
-                <textarea name="observacoes">${data?.observacoes || ''}</textarea>
+                <textarea name="observacoes" rows="3">${data?.observacoes || ''}</textarea>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>

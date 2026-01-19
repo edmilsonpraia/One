@@ -99,11 +99,13 @@ function showTab(tabName) {
         'parcerias': 'Nova Parceria'
     };
     addBtn.innerHTML = `<i class="fas fa-plus"></i> ${btnTexts[tabName] || 'Novo'}`;
-    addBtn.style.display = tabName === 'dashboard' ? 'none' : 'flex';
+    addBtn.style.display = (tabName === 'dashboard' || tabName === 'contabilidade') ? 'none' : 'flex';
 
     // Refresh content
     if (tabName === 'dashboard') {
         atualizarDashboard();
+    } else if (tabName === 'contabilidade') {
+        atualizarContabilidade();
     } else {
         renderTable(tabName);
     }
@@ -176,6 +178,7 @@ function renderTable(modulo) {
 function renderTableRow(modulo, item) {
     switch(modulo) {
         case 'fornecedores':
+            const avaliacaoStarsFornecedor = item.avaliacao ? '⭐'.repeat(parseInt(item.avaliacao)) : '-';
             return `
                 <td><strong>${item.codigo}</strong></td>
                 <td>${item.nome}</td>
@@ -184,8 +187,13 @@ function renderTableRow(modulo, item) {
                 </span></td>
                 <td>${item.area}</td>
                 <td>${item.produto}</td>
+                <td>${item.valor ? new Intl.NumberFormat('pt-AO', {style: 'currency', currency: item.moeda || 'AOA'}).format(item.valor) : '-'}</td>
+                <td>${avaliacaoStarsFornecedor}</td>
                 <td>${item.responsavel}</td>
                 <td class="action-buttons">
+                    <button class="btn-icon" style="color: #10b981;" onclick="gerarFaturaFornecedor('${item.codigo}')" title="Gerar Fatura">
+                        <i class="fas fa-file-invoice"></i>
+                    </button>
                     <button class="btn-icon edit" onclick="editarItem('fornecedores', '${item.codigo}')">
                         <i class="fas fa-edit"></i>
                     </button>

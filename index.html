@@ -49,6 +49,9 @@
             <button class="tab-btn" onclick="showTab('parcerias')">
                 <i class="fas fa-handshake"></i> Parcerias
             </button>
+            <button class="tab-btn" onclick="showTab('contabilidade')">
+                <i class="fas fa-chart-line"></i> Contabilidade
+            </button>
         </div>
 
         <!-- Dashboard Tab -->
@@ -161,6 +164,8 @@
                             <th>Status</th>
                             <th>Área</th>
                             <th>Produto/Serviço</th>
+                            <th>Valor</th>
+                            <th>Avaliação</th>
                             <th>Responsável</th>
                             <th class="actions-col">Ações</th>
                         </tr>
@@ -300,6 +305,128 @@
                 </table>
             </div>
         </div>
+
+        <!-- Contabilidade Tab -->
+        <div id="contabilidade-tab" class="tab-content">
+            <div class="module-header">
+                <h2><i class="fas fa-chart-line"></i> Análise Contabilística e Financeira</h2>
+                <button class="btn btn-success" onclick="exportarRelatorioFinanceiro()">
+                    <i class="fas fa-file-excel"></i> Exportar Relatório
+                </button>
+            </div>
+
+            <!-- Financial Summary Cards -->
+            <div class="stats-grid-extended">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="total-receitas">Kz 0,00</h3>
+                        <p>Total Receitas Estimadas</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="total-despesas">Kz 0,00</h3>
+                        <p>Total Despesas/Fornecedores</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="saldo-liquido">Kz 0,00</h3>
+                        <p>Saldo Líquido</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="total-dividas">Kz 0,00</h3>
+                        <p>Total em Dívida</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0;">
+                <div class="chart-container" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <h3 style="margin: 0 0 1rem 0; color: #A0682A;">Despesas por Departamento</h3>
+                    <canvas id="despesas-departamento-chart"></canvas>
+                </div>
+                <div class="chart-container" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <h3 style="margin: 0 0 1rem 0; color: #A0682A;">Receitas vs Despesas (Mensal)</h3>
+                    <canvas id="receitas-despesas-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Departamentos Financial Table -->
+            <div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 2rem 0;">
+                <h3 style="margin: 0 0 1rem 0; color: #A0682A; border-bottom: 2px solid #E07B39; padding-bottom: 0.5rem;">
+                    <i class="fas fa-building"></i> Análise Financeira por Departamento/Área
+                </h3>
+                <div class="table-container">
+                    <table id="departamentos-financeiro-table">
+                        <thead>
+                            <tr>
+                                <th>Departamento/Área</th>
+                                <th>Nº Fornecedores</th>
+                                <th>Nº Prestadores</th>
+                                <th>Nº Contratos</th>
+                                <th>Total Despesas</th>
+                                <th>Total Pago</th>
+                                <th>Total em Dívida</th>
+                                <th>% do Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="departamentos-financeiro-tbody"></tbody>
+                        <tfoot>
+                            <tr style="background: #f8f4ef; font-weight: bold; font-size: 1.1em;">
+                                <td>TOTAL GERAL</td>
+                                <td id="total-fornecedores-geral">0</td>
+                                <td id="total-prestadores-geral">0</td>
+                                <td id="total-contratos-geral">0</td>
+                                <td id="total-despesas-geral">Kz 0,00</td>
+                                <td id="total-pago-geral">Kz 0,00</td>
+                                <td id="total-divida-geral">Kz 0,00</td>
+                                <td>100%</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Fornecedores com Maior Despesa -->
+            <div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h3 style="margin: 0 0 1rem 0; color: #A0682A; border-bottom: 2px solid #E07B39; padding-bottom: 0.5rem;">
+                    <i class="fas fa-trophy"></i> Top 10 Fornecedores por Despesa
+                </h3>
+                <div class="table-container">
+                    <table id="top-fornecedores-table">
+                        <thead>
+                            <tr>
+                                <th>Posição</th>
+                                <th>Código</th>
+                                <th>Nome</th>
+                                <th>Departamento</th>
+                                <th>Produto/Serviço</th>
+                                <th>Valor</th>
+                                <th>Frequência</th>
+                                <th>Avaliação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="top-fornecedores-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Universal Modal -->
@@ -321,6 +448,7 @@
     <script src="js/charts-novo.js"></script>
     <script src="js/export-novo.js"></script>
     <script src="js/fatura.js"></script>
+    <script src="js/contabilidade.js"></script>
     <script src="js/app-novo.js"></script>
 </body>
 </html>
