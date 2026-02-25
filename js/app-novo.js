@@ -11,7 +11,8 @@ function toSingular(plural) {
         'prestadores': 'prestador',
         'contratos': 'contrato',
         'memorandos': 'memorando',
-        'parcerias': 'parceria'
+        'parcerias': 'parceria',
+        'avaliacoes': 'avaliacao'
     };
     return conversions[plural] || plural;
 }
@@ -68,6 +69,13 @@ function setupEventListeners() {
     document.getElementById('search-contratos').addEventListener('input', () => renderTable('contratos'));
     document.getElementById('search-memorandos').addEventListener('input', () => renderTable('memorandos'));
     document.getElementById('search-parcerias').addEventListener('input', () => renderTable('parcerias'));
+    document.getElementById('search-avaliacoes').addEventListener('input', () => renderTable('avaliacoes'));
+
+    // Avaliação result filter
+    const filterResultado = document.getElementById('filter-avaliacao-resultado');
+    if (filterResultado) {
+        filterResultado.addEventListener('change', () => renderTable('avaliacoes'));
+    }
 
     // Dynamic add button
     document.getElementById('add-button').addEventListener('click', () => {
@@ -96,10 +104,16 @@ function showTab(tabName) {
         'prestadores': 'Novo Prestador',
         'contratos': 'Novo Contrato',
         'memorandos': 'Novo Memorando',
-        'parcerias': 'Nova Parceria'
+        'parcerias': 'Nova Parceria',
+        'avaliacoes': 'Nova Avaliação'
     };
     addBtn.innerHTML = `<i class="fas fa-plus"></i> ${btnTexts[tabName] || 'Novo'}`;
     addBtn.style.display = (tabName === 'dashboard' || tabName === 'contabilidade') ? 'none' : 'flex';
+
+    // Update avaliações summary when switching to that tab
+    if (tabName === 'avaliacoes') {
+        atualizarResumoAvaliacoes();
+    }
 
     // Refresh content
     if (tabName === 'dashboard') {
@@ -133,6 +147,7 @@ function carregarTodasTabelas() {
     renderTable('contratos');
     renderTable('memorandos');
     renderTable('parcerias');
+    renderTable('avaliacoes');
 }
 
 // Render Table
@@ -145,6 +160,12 @@ function renderTable(modulo) {
     let dados = filtrarDados(modulo, termo);
 
     // Apply additional filters
+    if (modulo === 'avaliacoes') {
+        const resultadoFilter = document.getElementById('filter-avaliacao-resultado');
+        if (resultadoFilter && resultadoFilter.value) {
+            dados = dados.filter(a => a.resultado === resultadoFilter.value);
+        }
+    }
     if (modulo === 'fornecedores') {
         const statusFilter = document.getElementById('filter-fornecedor-status').value;
         const areaFilter = document.getElementById('filter-fornecedor-area').value;
@@ -290,6 +311,34 @@ function renderTableRow(modulo, item) {
                     </button>
                 </td>
             `;
+
+        case 'avaliacoes':
+            const notaGlobal = item.nota_global ? parseFloat(item.nota_global) : 0;
+            const notaColor = notaGlobal >= 4 ? '#10b981' : notaGlobal >= 3 ? '#f59e0b' : '#ef4444';
+            const resultadoClass = item.resultado === 'Aprovado' ? 'status-corrente' :
+                                   item.resultado === 'Reprovado' ? 'status-nao-corrente' : 'info-badge';
+            const renderNota = (val) => val ? '⭐'.repeat(parseInt(val)) : '-';
+            return `
+                <td><strong>${item.codigo}</strong></td>
+                <td>${item.nome_fornecedor || item.codigo_fornecedor || '-'}</td>
+                <td>${item.data_avaliacao || '-'}</td>
+                <td>${renderNota(item.qualidade)}</td>
+                <td>${renderNota(item.prazo_entrega)}</td>
+                <td>${renderNota(item.custo_beneficio)}</td>
+                <td>${renderNota(item.atendimento)}</td>
+                <td>${renderNota(item.conformidade)}</td>
+                <td><strong style="color: ${notaColor}; font-size: 1.1em;">${item.nota_global || '-'}</strong></td>
+                <td><span class="status-badge ${resultadoClass}">${item.resultado || '-'}</span></td>
+                <td>${item.avaliador || '-'}</td>
+                <td class="action-buttons">
+                    <button class="btn-icon edit" onclick="editarItem('avaliacoes', '${item.codigo}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-icon delete" onclick="confirmarDelete('avaliacoes', '${item.codigo}', '${item.nome_fornecedor || item.codigo}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
     }
 }
 
@@ -307,7 +356,8 @@ function openModal(tipo) {
         'prestador': 'Novo Prestador',
         'contrato': 'Novo Contrato',
         'memorando': 'Novo Memorando',
-        'parceria': 'Nova Parceria'
+        'parceria': 'Nova Parceria',
+        'avaliacao': 'Nova Avaliação de Fornecedor'
     };
 
     modalTitle.textContent = titles[tipo] || 'Novo';
@@ -340,7 +390,8 @@ function editarItem(modulo, id, campo = 'codigo') {
         'prestador': 'Editar Prestador',
         'contrato': 'Editar Contrato',
         'memorando': 'Editar Memorando',
-        'parceria': 'Editar Parceria'
+        'parceria': 'Editar Parceria',
+        'avaliacao': 'Editar Avaliação de Fornecedor'
     };
 
     modalTitle.textContent = titles[tipo] || 'Editar';
@@ -365,15 +416,18 @@ function mostrarNotificacao(mensagem, tipo = 'info') {
     const notification = document.createElement('div');
     notification.style.cssText = `
         position: fixed;
-        top: 100px;
-        right: 20px;
+        top: 48px;
+        right: 12px;
         background: ${tipo === 'success' ? '#10b981' : tipo === 'error' ? '#ef4444' : '#3b82f6'};
         color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        padding: 6px 14px;
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         z-index: 10000;
-        animation: slideIn 0.3s ease;
+        font-size: 12px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        animation: slideIn 0.2s ease;
+        max-width: 300px;
     `;
     notification.textContent = mensagem;
 
@@ -383,6 +437,72 @@ function mostrarNotificacao(mensagem, tipo = 'info') {
         notification.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => document.body.removeChild(notification), 300);
     }, 3000);
+}
+
+// Avaliações Summary
+function atualizarResumoAvaliacoes() {
+    const avaliacoes = obterDados('avaliacoes');
+
+    // Total
+    const totalEl = document.getElementById('total-avaliacoes');
+    if (totalEl) totalEl.textContent = avaliacoes.length;
+
+    // Média global
+    const mediaEl = document.getElementById('media-global-avaliacoes');
+    if (mediaEl) {
+        if (avaliacoes.length > 0) {
+            const somaNotas = avaliacoes.reduce((acc, a) => acc + (parseFloat(a.nota_global) || 0), 0);
+            mediaEl.textContent = (somaNotas / avaliacoes.length).toFixed(1);
+        } else {
+            mediaEl.textContent = '0.0';
+        }
+    }
+
+    // Aprovados
+    const aprovadosEl = document.getElementById('total-aprovados');
+    if (aprovadosEl) {
+        aprovadosEl.textContent = avaliacoes.filter(a => a.resultado === 'Aprovado').length;
+    }
+
+    // Reprovados
+    const reprovadosEl = document.getElementById('total-reprovados');
+    if (reprovadosEl) {
+        reprovadosEl.textContent = avaliacoes.filter(a => a.resultado === 'Reprovado').length;
+    }
+}
+
+// Exportar Avaliações para Excel
+function exportarAvaliacoes() {
+    const avaliacoes = obterDados('avaliacoes');
+    if (avaliacoes.length === 0) {
+        mostrarNotificacao('Nenhuma avaliação para exportar!', 'error');
+        return;
+    }
+
+    const dados = avaliacoes.map(a => ({
+        'Código': a.codigo,
+        'Cód. Fornecedor': a.codigo_fornecedor,
+        'Nome Fornecedor': a.nome_fornecedor,
+        'Data Avaliação': a.data_avaliacao,
+        'Período': a.periodo,
+        'Qualidade': a.qualidade,
+        'Prazo Entrega': a.prazo_entrega,
+        'Custo-Benefício': a.custo_beneficio,
+        'Atendimento': a.atendimento,
+        'Conformidade': a.conformidade,
+        'Nota Global': a.nota_global,
+        'Resultado': a.resultado,
+        'Avaliador': a.avaliador,
+        'Pontos Fortes': a.pontos_fortes,
+        'Pontos a Melhorar': a.pontos_melhorar,
+        'Observações': a.observacoes
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(dados);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Avaliações');
+    XLSX.writeFile(wb, 'avaliacoes_fornecedores.xlsx');
+    mostrarNotificacao('Avaliações exportadas com sucesso!', 'success');
 }
 
 // Close modal on click outside

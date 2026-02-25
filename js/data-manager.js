@@ -5,7 +5,8 @@ const STORAGE_KEYS = {
     prestadores: 'prestadores_data',
     contratos: 'contratos_data',
     memorandos: 'memorandos_data',
-    parcerias: 'parcerias_data'
+    parcerias: 'parcerias_data',
+    avaliacoes: 'avaliacoes_data'
 };
 
 // Data Objects
@@ -14,7 +15,8 @@ let dadosGlobais = {
     prestadores: [],
     contratos: [],
     memorandos: [],
-    parcerias: []
+    parcerias: [],
+    avaliacoes: []
 };
 
 // Initialize Data
@@ -46,7 +48,8 @@ async function carregarDadosIniciais() {
             prestadores: data.prestadores || [],
             contratos: data.contratos || [],
             memorandos: data.memorandos || [],
-            parcerias: data.parcerias || []
+            parcerias: data.parcerias || [],
+            avaliacoes: data.avaliacoes || []
         };
 
         // Save to localStorage
@@ -127,6 +130,9 @@ function obterEstatisticas() {
         parcerias: {
             total: dadosGlobais.parcerias.length,
             ativas: dadosGlobais.parcerias.filter(p => p.status === 'Ativo').length
+        },
+        avaliacoes: {
+            total: dadosGlobais.avaliacoes.length
         }
     };
 

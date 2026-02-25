@@ -6,7 +6,8 @@ function renderForm(tipo, data = null) {
         prestador: renderPrestadorForm(data),
         contrato: renderContratoForm(data),
         memorando: renderMemorandoForm(data),
-        parceria: renderParceriaForm(data)
+        parceria: renderParceriaForm(data),
+        avaliacao: renderAvaliacaoForm(data)
     };
 
     return forms[tipo] || '';
@@ -491,6 +492,170 @@ function renderParceriaForm(data) {
     `;
 }
 
+function renderAvaliacaoForm(data) {
+    const fornecedores = obterDados('fornecedores');
+    const fornecedorOptions = fornecedores.map(f =>
+        `<option value="${f.codigo}" ${data?.codigo_fornecedor === f.codigo ? 'selected' : ''}>${f.codigo} - ${f.nome}</option>`
+    ).join('');
+
+    const today = new Date().toISOString().split('T')[0];
+
+    return `
+        <form class="modal-form" onsubmit="salvarAvaliacao(event)">
+            <h3 style="margin: 0 0 1rem 0; color: #A0682A; border-bottom: 2px solid #E07B39; padding-bottom: 0.5rem;">Identificação</h3>
+            <div class="form-group">
+                <label>Código da Avaliação *</label>
+                <input type="text" name="codigo" value="${data?.codigo || ''}" ${data ? 'readonly' : ''} required placeholder="AV001">
+            </div>
+            <div class="form-group">
+                <label>Fornecedor *</label>
+                <select name="codigo_fornecedor" required onchange="preencherNomeFornecedor(this)">
+                    <option value="">Selecionar Fornecedor...</option>
+                    ${fornecedorOptions}
+                </select>
+            </div>
+            <div class="form-group full">
+                <label>Nome do Fornecedor</label>
+                <input type="text" name="nome_fornecedor" value="${data?.nome_fornecedor || ''}" readonly>
+            </div>
+            <div class="form-group">
+                <label>Data da Avaliação *</label>
+                <input type="date" name="data_avaliacao" value="${data?.data_avaliacao || today}" required>
+            </div>
+            <div class="form-group">
+                <label>Período Avaliado</label>
+                <input type="text" name="periodo" value="${data?.periodo || ''}" placeholder="Ex: Jan-Mar 2026">
+            </div>
+
+            <h3 style="margin: 1.5rem 0 1rem 0; color: #A0682A; border-bottom: 2px solid #E07B39; padding-bottom: 0.5rem;">Critérios de Avaliação (1 a 5)</h3>
+            <div class="form-group">
+                <label>Qualidade do Produto/Serviço *</label>
+                <select name="qualidade" required onchange="calcularNotaGlobal()">
+                    <option value="">Selecionar...</option>
+                    <option value="1" ${data?.qualidade === '1' ? 'selected' : ''}>1 - Muito Fraco</option>
+                    <option value="2" ${data?.qualidade === '2' ? 'selected' : ''}>2 - Fraco</option>
+                    <option value="3" ${data?.qualidade === '3' ? 'selected' : ''}>3 - Bom</option>
+                    <option value="4" ${data?.qualidade === '4' ? 'selected' : ''}>4 - Muito Bom</option>
+                    <option value="5" ${data?.qualidade === '5' ? 'selected' : ''}>5 - Excelente</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Prazo de Entrega *</label>
+                <select name="prazo_entrega" required onchange="calcularNotaGlobal()">
+                    <option value="">Selecionar...</option>
+                    <option value="1" ${data?.prazo_entrega === '1' ? 'selected' : ''}>1 - Muito Fraco</option>
+                    <option value="2" ${data?.prazo_entrega === '2' ? 'selected' : ''}>2 - Fraco</option>
+                    <option value="3" ${data?.prazo_entrega === '3' ? 'selected' : ''}>3 - Bom</option>
+                    <option value="4" ${data?.prazo_entrega === '4' ? 'selected' : ''}>4 - Muito Bom</option>
+                    <option value="5" ${data?.prazo_entrega === '5' ? 'selected' : ''}>5 - Excelente</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Custo-Benefício *</label>
+                <select name="custo_beneficio" required onchange="calcularNotaGlobal()">
+                    <option value="">Selecionar...</option>
+                    <option value="1" ${data?.custo_beneficio === '1' ? 'selected' : ''}>1 - Muito Fraco</option>
+                    <option value="2" ${data?.custo_beneficio === '2' ? 'selected' : ''}>2 - Fraco</option>
+                    <option value="3" ${data?.custo_beneficio === '3' ? 'selected' : ''}>3 - Bom</option>
+                    <option value="4" ${data?.custo_beneficio === '4' ? 'selected' : ''}>4 - Muito Bom</option>
+                    <option value="5" ${data?.custo_beneficio === '5' ? 'selected' : ''}>5 - Excelente</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Atendimento/Comunicação *</label>
+                <select name="atendimento" required onchange="calcularNotaGlobal()">
+                    <option value="">Selecionar...</option>
+                    <option value="1" ${data?.atendimento === '1' ? 'selected' : ''}>1 - Muito Fraco</option>
+                    <option value="2" ${data?.atendimento === '2' ? 'selected' : ''}>2 - Fraco</option>
+                    <option value="3" ${data?.atendimento === '3' ? 'selected' : ''}>3 - Bom</option>
+                    <option value="4" ${data?.atendimento === '4' ? 'selected' : ''}>4 - Muito Bom</option>
+                    <option value="5" ${data?.atendimento === '5' ? 'selected' : ''}>5 - Excelente</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Conformidade com Requisitos *</label>
+                <select name="conformidade" required onchange="calcularNotaGlobal()">
+                    <option value="">Selecionar...</option>
+                    <option value="1" ${data?.conformidade === '1' ? 'selected' : ''}>1 - Muito Fraco</option>
+                    <option value="2" ${data?.conformidade === '2' ? 'selected' : ''}>2 - Fraco</option>
+                    <option value="3" ${data?.conformidade === '3' ? 'selected' : ''}>3 - Bom</option>
+                    <option value="4" ${data?.conformidade === '4' ? 'selected' : ''}>4 - Muito Bom</option>
+                    <option value="5" ${data?.conformidade === '5' ? 'selected' : ''}>5 - Excelente</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Nota Global (Automática)</label>
+                <input type="text" name="nota_global" id="nota-global-input" value="${data?.nota_global || ''}" readonly style="background: #f0f0f0; font-weight: bold; font-size: 1.1em;">
+            </div>
+
+            <h3 style="margin: 1.5rem 0 1rem 0; color: #A0682A; border-bottom: 2px solid #E07B39; padding-bottom: 0.5rem;">Resultado e Observações</h3>
+            <div class="form-group">
+                <label>Resultado *</label>
+                <select name="resultado" required>
+                    <option value="">Selecionar...</option>
+                    <option value="Aprovado" ${data?.resultado === 'Aprovado' ? 'selected' : ''}>Aprovado</option>
+                    <option value="Aprovado com Reservas" ${data?.resultado === 'Aprovado com Reservas' ? 'selected' : ''}>Aprovado com Reservas</option>
+                    <option value="Reprovado" ${data?.resultado === 'Reprovado' ? 'selected' : ''}>Reprovado</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Avaliador/Responsável *</label>
+                <input type="text" name="avaliador" value="${data?.avaliador || ''}" required>
+            </div>
+            <div class="form-group full">
+                <label>Pontos Fortes</label>
+                <textarea name="pontos_fortes" rows="2">${data?.pontos_fortes || ''}</textarea>
+            </div>
+            <div class="form-group full">
+                <label>Pontos a Melhorar</label>
+                <textarea name="pontos_melhorar" rows="2">${data?.pontos_melhorar || ''}</textarea>
+            </div>
+            <div class="form-group full">
+                <label>Observações</label>
+                <textarea name="observacoes" rows="2">${data?.observacoes || ''}</textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </form>
+    `;
+}
+
+function preencherNomeFornecedor(selectElement) {
+    const codigo = selectElement.value;
+    const fornecedor = obterPorId('fornecedores', codigo);
+    const nomeInput = selectElement.closest('form').querySelector('[name="nome_fornecedor"]');
+    if (fornecedor && nomeInput) {
+        nomeInput.value = fornecedor.nome;
+    } else if (nomeInput) {
+        nomeInput.value = '';
+    }
+}
+
+function calcularNotaGlobal() {
+    const form = document.querySelector('.modal-form');
+    if (!form) return;
+
+    const campos = ['qualidade', 'prazo_entrega', 'custo_beneficio', 'atendimento', 'conformidade'];
+    let soma = 0;
+    let count = 0;
+
+    campos.forEach(campo => {
+        const select = form.querySelector(`[name="${campo}"]`);
+        if (select && select.value) {
+            soma += parseInt(select.value);
+            count++;
+        }
+    });
+
+    const notaInput = document.getElementById('nota-global-input');
+    if (notaInput && count > 0) {
+        const media = (soma / count).toFixed(1);
+        notaInput.value = media;
+    }
+}
+
 // Helper function for area selection
 function toggleAreaOutro(selectElement) {
     const outroGroup = document.getElementById('area-outro-group');
@@ -617,4 +782,27 @@ function salvarParceria(event) {
     closeModal();
     renderTable('parcerias');
     atualizarDashboard();
+}
+
+function salvarAvaliacao(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
+
+    if (editingId) {
+        atualizarItem('avaliacoes', editingId, data);
+        mostrarNotificacao('Avaliação atualizada com sucesso!', 'success');
+    } else {
+        if (obterPorId('avaliacoes', data.codigo)) {
+            mostrarNotificacao('Código de avaliação já existe!', 'error');
+            return;
+        }
+        adicionarItem('avaliacoes', data);
+        mostrarNotificacao('Avaliação adicionada com sucesso!', 'success');
+    }
+
+    closeModal();
+    renderTable('avaliacoes');
+    atualizarDashboard();
+    atualizarResumoAvaliacoes();
 }

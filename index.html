@@ -13,17 +13,20 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <img src="Picture1.png" alt="Copia Group of Companies Logo" class="logo-image">
-                <h1>Sistema de Gestão Comercial</h1>
+                <img src="Picture1.png" alt="Copia Group" class="logo-image">
+                <h1>SGC - Copia Group</h1>
             </div>
-            <div class="nav-actions">
+            <div class="nav-actions" id="nav-actions">
                 <button class="btn btn-primary" id="add-button">
-                    <i class="fas fa-plus"></i> Novo
+                    <i class="fas fa-plus"></i> <span class="tab-label">Novo</span>
                 </button>
                 <button class="btn btn-success" onclick="exportAllToExcel()">
-                    <i class="fas fa-file-excel"></i> Exportar
+                    <i class="fas fa-download"></i> <span class="tab-label">Exportar</span>
                 </button>
             </div>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <i class="fas fa-ellipsis-v"></i>
+            </button>
         </div>
     </nav>
 
@@ -32,25 +35,28 @@
         <!-- Tabs -->
         <div class="tabs">
             <button class="tab-btn active" onclick="showTab('dashboard')">
-                <i class="fas fa-th-large"></i> Dashboard
+                <i class="fas fa-th-large"></i> <span class="tab-label">Dashboard</span>
             </button>
             <button class="tab-btn" onclick="showTab('fornecedores')">
-                <i class="fas fa-building"></i> Fornecedores
+                <i class="fas fa-box"></i> <span class="tab-label">Fornecedores</span>
             </button>
             <button class="tab-btn" onclick="showTab('prestadores')">
-                <i class="fas fa-user-tie"></i> Prestadores
+                <i class="fas fa-wrench"></i> <span class="tab-label">Prestadores</span>
             </button>
             <button class="tab-btn" onclick="showTab('contratos')">
-                <i class="fas fa-file-contract"></i> Contratos
+                <i class="fas fa-file-signature"></i> <span class="tab-label">Contratos</span>
             </button>
             <button class="tab-btn" onclick="showTab('memorandos')">
-                <i class="fas fa-file-alt"></i> Memorandos
+                <i class="fas fa-envelope"></i> <span class="tab-label">Memorandos</span>
             </button>
             <button class="tab-btn" onclick="showTab('parcerias')">
-                <i class="fas fa-handshake"></i> Parcerias
+                <i class="fas fa-link"></i> <span class="tab-label">Parcerias</span>
+            </button>
+            <button class="tab-btn" onclick="showTab('avaliacoes')">
+                <i class="fas fa-clipboard-check"></i> <span class="tab-label">Avaliações</span>
             </button>
             <button class="tab-btn" onclick="showTab('contabilidade')">
-                <i class="fas fa-chart-line"></i> Contabilidade
+                <i class="fas fa-wallet"></i> <span class="tab-label">Contabilidade</span>
             </button>
         </div>
 
@@ -316,6 +322,97 @@
             </div>
         </div>
 
+        <!-- Avaliação de Fornecedores Tab -->
+        <div id="avaliacoes-tab" class="tab-content">
+            <div class="module-header">
+                <h2><i class="fas fa-star-half-alt"></i> Avaliação de Fornecedores</h2>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-success" onclick="exportarAvaliacoes()">
+                        <i class="fas fa-file-excel"></i> Exportar Excel
+                    </button>
+                    <button class="btn btn-primary" onclick="openModal('avaliacao')">
+                        <i class="fas fa-plus"></i> Nova Avaliação
+                    </button>
+                </div>
+            </div>
+
+            <!-- Resumo de Avaliações -->
+            <div class="stats-grid-extended" id="avaliacoes-resumo">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="total-avaliacoes">0</h3>
+                        <p>Total Avaliações</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="media-global-avaliacoes">0.0</h3>
+                        <p>Nota Média Global</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">
+                        <i class="fas fa-thumbs-up"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="total-aprovados">0</h3>
+                        <p>Aprovados</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                        <i class="fas fa-thumbs-down"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="total-reprovados">0</h3>
+                        <p>Reprovados</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filters-section">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-avaliacoes" placeholder="Pesquisar avaliação...">
+                </div>
+                <div class="filter-group">
+                    <select id="filter-avaliacao-resultado">
+                        <option value="">Todos os Resultados</option>
+                        <option value="Aprovado">Aprovado</option>
+                        <option value="Aprovado com Reservas">Aprovado com Reservas</option>
+                        <option value="Reprovado">Reprovado</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="avaliacoes-table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Fornecedor</th>
+                            <th>Data Avaliação</th>
+                            <th>Qualidade</th>
+                            <th>Prazo Entrega</th>
+                            <th>Custo-Benefício</th>
+                            <th>Atendimento</th>
+                            <th>Conformidade</th>
+                            <th>Nota Global</th>
+                            <th>Resultado</th>
+                            <th>Avaliador</th>
+                            <th class="actions-col">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="avaliacoes-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- Contabilidade Tab -->
         <div id="contabilidade-tab" class="tab-content">
             <div class="module-header">
@@ -366,20 +463,20 @@
             </div>
 
             <!-- Charts Section -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0;">
-                <div class="chart-container" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    <h3 style="margin: 0 0 1rem 0; color: #A0682A;">Despesas por Departamento</h3>
+            <div class="charts-grid" style="margin: 10px 0;">
+                <div class="chart-container">
+                    <h3 style="margin: 0 0 8px 0; color: var(--primary-color); font-size: 12px; font-weight: 600;">Despesas por Departamento</h3>
                     <canvas id="despesas-departamento-chart"></canvas>
                 </div>
-                <div class="chart-container" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    <h3 style="margin: 0 0 1rem 0; color: #A0682A;">Receitas vs Despesas (Mensal)</h3>
+                <div class="chart-container">
+                    <h3 style="margin: 0 0 8px 0; color: var(--primary-color); font-size: 12px; font-weight: 600;">Receitas vs Despesas (Mensal)</h3>
                     <canvas id="receitas-despesas-chart"></canvas>
                 </div>
             </div>
 
             <!-- Departamentos Financial Table -->
-            <div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 2rem 0;">
-                <h3 style="margin: 0 0 1rem 0; color: #A0682A; border-bottom: 2px solid #E07B39; padding-bottom: 0.5rem;">
+            <div style="background: var(--bg-card); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); margin: 10px 0;">
+                <h3 style="margin: 0 0 8px 0; color: var(--primary-color); border-bottom: 1px solid var(--border-color); padding-bottom: 4px; font-size: 12px; font-weight: 600;">
                     <i class="fas fa-building"></i> Análise Financeira por Departamento/Área
                 </h3>
                 <div class="table-container">
@@ -398,7 +495,7 @@
                         </thead>
                         <tbody id="departamentos-financeiro-tbody"></tbody>
                         <tfoot>
-                            <tr style="background: #f8f4ef; font-weight: bold; font-size: 1.1em;">
+                            <tr style="background: var(--light-color); font-weight: 600; font-size: 12px;">
                                 <td>TOTAL GERAL</td>
                                 <td id="total-fornecedores-geral">0</td>
                                 <td id="total-prestadores-geral">0</td>
@@ -414,8 +511,8 @@
             </div>
 
             <!-- Fornecedores com Maior Despesa -->
-            <div style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                <h3 style="margin: 0 0 1rem 0; color: #A0682A; border-bottom: 2px solid #E07B39; padding-bottom: 0.5rem;">
+            <div style="background: var(--bg-card); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color);">
+                <h3 style="margin: 0 0 8px 0; color: var(--primary-color); border-bottom: 1px solid var(--border-color); padding-bottom: 4px; font-size: 12px; font-weight: 600;">
                     <i class="fas fa-trophy"></i> Top 10 Fornecedores por Despesa
                 </h3>
                 <div class="table-container">
@@ -460,5 +557,18 @@
     <script src="js/fatura.js"></script>
     <script src="js/contabilidade.js"></script>
     <script src="js/app-novo.js"></script>
+    <script>
+        function toggleMobileMenu() {
+            document.getElementById('nav-actions').classList.toggle('show');
+        }
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('nav-actions');
+            const toggle = document.getElementById('mobile-menu-toggle');
+            if (menu && toggle && !menu.contains(e.target) && !toggle.contains(e.target)) {
+                menu.classList.remove('show');
+            }
+        });
+    </script>
 </body>
 </html>
